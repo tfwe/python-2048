@@ -63,25 +63,26 @@ class Board(object):
         board_changed = False
         initial_board = self.board_array
         for i in range(self.size):
-            for j in range(self.size):
-                x = j
-                y = i
-                if y == 0:
+            merge_allowed = [True]*self.size
+            for j in range(1, self.size):
+                x = i
+                y = j
+                if self.board_array[y][x] == 0:
                     continue
                 while y > 0:
-                    if self.board_array[y][x] == 0:
-                        pass
-                    elif self.board_array[y - 1][x] == 0:
+                    if self.board_array[y - 1][x] == 0:
                         self.board_array[y - 1][x] = self.board_array[y][x]
                         self.board_array[y][x] = 0
+                        y -= 1
                         board_changed = True
-                    elif (self.board_array[y - 1][x] == self.board_array[y][x]):
-                        self.board_array[y - 1][x] = self.board_array[y][x]*2
+                    elif self.board_array[y - 1][x] == self.board_array[y][x] and merge_allowed[x]:
+                        self.board_array[y - 1][x] *= 2
                         self.board_array[y][x] = 0
+                        merge_allowed[x] = False
+                        y -= 1
                         board_changed = True
                     else:
-                        pass
-                    y -= 1
+                        break
         if board_changed:
             self.spawn_pieces()
             self.turn += 1
