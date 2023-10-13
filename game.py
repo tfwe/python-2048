@@ -3,13 +3,21 @@ import random
 import math
 
 class Board(object):
-    def __init__(self, size=4):
-        if size < 2:
-            size = 2
-        self.size = size
-        self.game_over = False
-        self.turn = 0
-        self.board_array = np.zeros((size,size)).astype(int)
+    def __init__(self, size=4, otherboard=None):
+        if otherboard is None:
+            if size < 2:
+                size = 2
+            self.size = size
+            self.game_over = False
+            self.turn = 0
+            self.board_array = np.zeros((size,size)).astype(int)
+            self.initial_array = np.zeros((size,size)).astype(int)
+        else:
+            self.size = otherboard.size
+            self.game_over = otherboard.game_over
+            self.turn = otherboard.turn
+            self.board_array = np.copy(otherboard.board_array)
+            self.initial_array = np.copy(otherboard.initial_array)
     
     def __str__(self):
         return f"2048 (Turn: {self.turn}, Game over: {self.game_over})\n{self.board_array}"
@@ -77,8 +85,6 @@ class Board(object):
         if board_changed:
             self.spawn_pieces()
             self.turn += 1
-            if len(self.get_available_moves()) == 0:
-                self.game_over = True
             return True
         return False
 
@@ -110,32 +116,24 @@ class Board(object):
 
     def get_available_moves(self):
         available_moves = []
-        for i in range(self.size):
-            for j in range(self.size):
-                if self.board_array[i][j] == 0:
-                    # If there's an empty space, all moves are possible
-                    return ["up", "down", "left", "right"]
-                else:
-                    # Check for same-value tiles horizontally
-                    if j < self.size - 1 and self.board_array[i][j] == self.board_array[i][j + 1]:
-                        if "left" not in available_moves:
-                            available_moves.append("left")
-                        if "right" not in available_moves:
-                            available_moves.append("right")
-                    # Check for same-value tiles vertically
-                    if i < self.size - 1 and self.board_array[i][j] == self.board_array[i + 1][j]:
-                        if "up" not in available_moves:
-                            available_moves.append("up")
-                        if "down" not in available_moves:
-                            available_moves.append("down")
+        possible_moves = ["up", "down", "right", "left"]
+        sim_board = Board(-1, self)
+        for i in possible_moves:
+            if sim_board.move(i):
+                available_moves.append(i)
+                sim_board = Board(-1, self)
+        if len(available_moves) == 0:
+            self.game_over = True
         return available_moves
 
 def main():
-    board = Board(7)
+    board = Board(10)
     board.start_game()
+    print(board)
     moves = board.get_available_moves() 
+    print(moves)
     while len(moves) >= 1:
-        if (len(moves) == 1):
+        if len(moves) == 1:
             rand_index = 0
         else:
             rand_index = random.randint(0, len(moves) - 1)
