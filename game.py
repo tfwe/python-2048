@@ -25,37 +25,34 @@ class Board(object):
     def start_game(self):
         self.spawn_pieces()
         self.spawn_pieces()
-    
-    def spawn_pieces(self): 
-        possible_starting_pieces = [2, 4]
+
+    def spawn_pieces(self):
+        possible_starting_pieces = {2: 0.9, 4: 0.1}  # Modify this dictionary to add more tiles in the future
         open_tiles = self.get_open_tiles()
-        if len(open_tiles) == 0:
-            return
-        elif len(open_tiles) == 1:
-            rand_piece_index = random.randint(0, len(possible_starting_pieces) - 1)
-            self.board_array[open_tiles[0][0]][open_tiles[0][1]] = possible_starting_pieces[rand_piece_index]
-            return
-        else:
-            random.shuffle(open_tiles)
-            for k in range(math.ceil(self.size / 4)):
-                rand_piece_index = random.randint(0, len(possible_starting_pieces) - 1)
+
+        for _ in range(math.ceil(self.size / 4)):
+            if len(open_tiles) == 0:
+                return
+            elif len(open_tiles) == 1:
+                rand_tile_index = 0
+            else:
                 rand_tile_index = random.randint(0, len(open_tiles) - 1)
-                y = open_tiles[rand_tile_index][0]
-                x = open_tiles[rand_tile_index][1]
-                self.board_array[y][x] = possible_starting_pieces[rand_piece_index]
-                open_tiles.remove(open_tiles[rand_tile_index])
+                random.shuffle(open_tiles)
+            rand_piece = random.choices(list(possible_starting_pieces.keys()), weights=possible_starting_pieces.values(), k=1)[0]
+            y = open_tiles[rand_tile_index][0]
+            x = open_tiles[rand_tile_index][1]
+            self.board_array[y][x] = rand_piece
 
     def move(self, direction):
-        if (direction == "up"):
-            return self.move_up()
-        elif (direction == "down"):
-            return self.move_down()
-        elif (direction == "right"):
-            return self.move_right()
-        elif (direction == "left"):
-            return self.move_left()
-        else:
+        possible_moves = {
+                "up":self.move_up,
+                "down":self.move_down,
+                "right":self.move_right,
+                "left":self.move_left
+                }
+        if not possible_moves[direction]:
             return False
+        return possible_moves[direction]()
 
     def move_up(self):
         x = 0
@@ -126,20 +123,23 @@ class Board(object):
         if len(available_moves) == 0:
             self.game_over = True
         return available_moves
+    
+    def random_move(self):
+        moves = self.get_available_moves()
+        if len(moves) == 0:
+            return False
+        rand_move = lambda moves: self.move(moves[0 if len(moves) == 1 else random.randint(0, len(moves) - 1)])
+        return rand_move(moves)
 
 def main():
-    board = Board(10)
+    board = Board(4)
     board.start_game()
     print(board)
     moves = board.get_available_moves() 
     print(moves)
     while len(moves) >= 1:
-        if len(moves) == 1:
-            rand_index = 0
-        else:
-            rand_index = random.randint(0, len(moves) - 1)
-        board.move(moves[rand_index])
-        moves = board.get_available_moves()
+        board.random_move()
+        moves = board.get_available_moves() 
         print(board)
 
 if __name__ == "__main__":
