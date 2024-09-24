@@ -1,9 +1,5 @@
 import numpy as np
 import random
-import math
-from colorama import Fore, Style, Back
-import termplotlib as tpl 
-plt = tpl.figure()
 
 class Board:
     def __init__(self, size=4, otherboard=None):
