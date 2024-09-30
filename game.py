@@ -109,7 +109,22 @@ class Board:
                 moves.append(direction)
         return moves
 
+    def make_random_move(self):
+        """
+        Make a random valid move on the board.
+        
+        Returns:
+        - str: The direction of the move made, or None if no valid moves are available.
+        """
+        available_moves = self.get_available_moves()
+        if not available_moves:
+            self.game_over = True
+            return None
+        
+        random_move = random.choice(available_moves)
+        self.move(random_move)
+        return random_move
+
     def is_game_over(self):
         self.game_over = len(self.get_available_moves()) == 0
         return self.game_over
-

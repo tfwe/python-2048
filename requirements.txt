@@ -1,4 +1,7 @@
 numpy
+scipy
 matplotlib
 torch
+torchsummary
 gym
+json5
