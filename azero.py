@@ -190,7 +190,7 @@ if __name__ == "__main__":
     num_simulations = 50 
     c_puct = 2 
     learning_rate = 0.000001
-    num_episodes = 20
+    num_episodes = 12
     num_games_to_play = 1
     num_games_to_sample = 1
 

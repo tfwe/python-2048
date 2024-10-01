@@ -99,6 +99,7 @@ class Gym2048Env(gym.Env):
 
         # Reward for high max tile (encourages building large numbers)
         max_tile_reward = 1/(1 + math.exp(-(math.log2(max_tile)-4)/5))  # 11 is log2(2048), our target
+        turn_bonus = math.tanh((self.board.turn-100)/300)
         # print(max_tile_reward)
         # Reward for maintaining open tiles (encourages efficient board use)
         # open_tile_reward = open_tiles / 16  # 16 is the total number of tiles
@@ -128,7 +129,8 @@ class Gym2048Env(gym.Env):
         # )
 
         # Normalize to [-1, 1] range
-        return np.mean([2*open_tiles, max_tile_reward, merge_bonus, corner_reward])
+        reward = np.mean([open_tiles, max_tile_reward, merge_bonus, corner_reward, turn_bonus])
+        return reward 
 
     def calculate_monotonicity_bonus(self):
         """

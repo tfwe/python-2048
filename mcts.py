@@ -194,7 +194,7 @@ def main():
     env = Gym2048Env()
     value_net = DummyValueNetwork()
     policy_net = DummyPolicyNetwork()
-    mcts = MCTS(value_net, policy_net, num_simulations=50, c_puct=2)
+    mcts = MCTS(value_net, policy_net, num_simulations=100, c_puct=2)
     
     num_games = 1
     for i in range(num_games):
